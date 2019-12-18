@@ -29,3 +29,8 @@ $ControlPanelDesktopIcon = '{5399E694-6CE5-4D6C-8FCE-1D8870FDCBA0}'
 
 Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel' $MyComputerDesktopIcon 'DWORD' 0
 Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel' $UserDesktopIcon 'DWORD' 0
+
+### Updates ###
+# Check for updates, but download and install only on demand. Automatic reboot is disabled.
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU' 'AUOptions' 'DWORD' 2
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU' 'NoAutoRebootWithLoggedOnUsers' 'DWORD' 1
