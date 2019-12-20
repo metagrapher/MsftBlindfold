@@ -34,3 +34,13 @@ Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Hi
 # Check for updates, but download and install only on demand. Automatic reboot is disabled.
 Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU' 'AUOptions' 'DWORD' 2
 Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU' 'NoAutoRebootWithLoggedOnUsers' 'DWORD' 1
+
+### Privacy ###
+# Disable Collect Activity 
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\System' 'PublishUserActivities' 'DWORD' 0
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\System' 'UploadUserActivities' 'DWORD' 0
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\System' 'EnableActivityFeed' 'DWORD' 0
+# Disable telemetry
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\DataCollection' 'AllowTelemetry' 'DWORD' 0
+Set-Service DiagTrack -StartupType Disabled
+Stop-Service DiagTrack
