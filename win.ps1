@@ -34,6 +34,8 @@ Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Hi
 # Check for updates, but download and install only on demand. Automatic reboot is disabled.
 Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU' 'AUOptions' 'DWORD' 2
 Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU' 'NoAutoRebootWithLoggedOnUsers' 'DWORD' 1
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\DeliveryOptimization' 'DODownloadMode' 'DWORD' 0
+Update-ItemProperty 'HKLM:\Software\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config' 'DODownloadMode' 'DWORD' 0
 
 ### Privacy ###
 # Disable Collect Activity 
@@ -44,3 +46,58 @@ Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\System' 'EnableAc
 Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\DataCollection' 'AllowTelemetry' 'DWORD' 0
 Set-Service DiagTrack -StartupType Disabled
 Stop-Service DiagTrack
+# Disable DMW Push service
+Set-Service dmwappushservice -StartupType Disabled
+Stop-Service dmwappushservice
+
+### Remove built-in bloatware ###
+Get-AppxPackage *bubblewitch*| Remove-AppxPackage
+Get-AppxPackage *candycrush* | Remove-AppxPackage
+Get-AppxPackage *spotify* | Remove-AppxPackage
+Get-AppxPackage Microsoft.Office.OneNote | Remove-AppxPackage
+Get-AppxPackage Microsoft.OneConnect | Remove-AppxPackage
+Get-AppxPackage Microsoft.BingWeather | Remove-AppxPackage
+Get-AppxPackage Microsoft.GetHelp | Remove-AppxPackage
+Get-AppxPackage Microsoft.Getstarted | Remove-AppxPackage
+Get-AppxPackage Microsoft.MicrosoftOfficeHub | Remove-AppxPackage
+Get-AppxPackage Microsoft.MicrosoftSolitaireCollection | Remove-AppxPackage
+Get-AppxPackage Microsoft.MixedReality.Portal | Remove-AppxPackage
+Get-AppxPackage Microsoft.People | Remove-AppxPackage
+Get-AppxPackage Microsoft.Wallet | Remove-AppxPackage
+Get-AppxPackage Microsoft.Print3D | Remove-AppxPackage
+Get-AppxPackage Microsoft.WindowsFeedbackHub | Remove-AppxPackage
+Get-AppxPackage Microsoft.WindowsMaps | Remove-AppxPackage
+Get-AppxPackage Microsoft.XboxApp | Remove-AppxPackage
+Get-AppxPackage Microsoft.XboxGameOverlay* | Remove-AppxPackage
+Get-AppxPackage Microsoft.XboxGamingOverlay* | Remove-AppxPackage
+Get-AppxPackage Microsoft.XboxSpeechToTextOverlay* | Remove-AppxPackage
+Get-AppxPackage Microsoft.XboxIdentityProvider | Remove-AppxPackage
+Get-AppxPackage Microsoft.YourPhone | Remove-AppxPackage
+Get-AppxPackage Microsoft.ZuneMusic | Remove-AppxPackage
+Get-AppxPackage Microsoft.ZuneVideo | Remove-AppxPackage
+Get-AppxPackage Microsoft.SkypeApp | Remove-AppxPackage
+Get-AppxPackage microsoft.windowscommunicationsapps | Remove-AppxPackage
+
+# Remove OneDrive #
+# Kill onedrive process
+$onedrive = Get-Process onedrive -ErrorAction SilentlyContinue
+if ($onedrive) {
+    taskkill.exe /F /IM "OneDrive.exe" | Out-Null
+}
+# Uninstall OneDrive
+if (Test-Path "$env:systemroot\System32\OneDriveSetup.exe") {
+    & "$env:systemroot\System32\OneDriveSetup.exe" /uninstall
+}
+if (Test-Path "$env:systemroot\SysWOW64\OneDriveSetup.exe") {
+    & "$env:systemroot\SysWOW64\OneDriveSetup.exe" /uninstall
+}
+# Disable OneDrive via Group Policies
+Update-ItemProperty 'HKLM:\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\OneDrive' 'DisableFileSyncNGSC' 'DWORD' 1
+# Remove OneDrive leftover directories
+rm -Recurse -Force -ErrorAction SilentlyContinue "$env:localappdata\Microsoft\OneDrive"
+rm -Recurse -Force -ErrorAction SilentlyContinue "$env:programdata\Microsoft OneDrive"
+rm -Recurse -Force -ErrorAction SilentlyContinue "C:\OneDriveTemp"
+# Remove startmenu entry
+rm -Force -ErrorAction SilentlyContinue "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
+# Remove OnDrive directory from user home
+rm -Recurse -Force -ErrorAction SilentlyContinue "$env:userprofile\OneDrive"
