@@ -30,6 +30,10 @@ $ControlPanelDesktopIcon = '{5399E694-6CE5-4D6C-8FCE-1D8870FDCBA0}'
 Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel' $MyComputerDesktopIcon 'DWORD' 0
 Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel' $UserDesktopIcon 'DWORD' 0
 
+# Hide 3D objects in Explorer's sidebar
+Remove-Item -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}'
+Remove-Item -Path 'HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}'
+
 ### Updates ###
 # Check for updates, but download and install only on demand. Automatic reboot is disabled.
 Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate\AU' 'AUOptions' 'DWORD' 2
@@ -57,6 +61,7 @@ Get-AppxPackage *spotify* | Remove-AppxPackage
 Get-AppxPackage Microsoft.Office.OneNote | Remove-AppxPackage
 Get-AppxPackage Microsoft.OneConnect | Remove-AppxPackage
 Get-AppxPackage Microsoft.BingWeather | Remove-AppxPackage
+Get-AppxPackage Microsoft.BingNews | Remove-AppxPackage
 Get-AppxPackage Microsoft.GetHelp | Remove-AppxPackage
 Get-AppxPackage Microsoft.Getstarted | Remove-AppxPackage
 Get-AppxPackage Microsoft.MicrosoftOfficeHub | Remove-AppxPackage
@@ -65,6 +70,7 @@ Get-AppxPackage Microsoft.MixedReality.Portal | Remove-AppxPackage
 Get-AppxPackage Microsoft.People | Remove-AppxPackage
 Get-AppxPackage Microsoft.Wallet | Remove-AppxPackage
 Get-AppxPackage Microsoft.Print3D | Remove-AppxPackage
+Get-AppxPackage Microsoft.Windows.Photos | Remove-AppxPackage
 Get-AppxPackage Microsoft.WindowsFeedbackHub | Remove-AppxPackage
 Get-AppxPackage Microsoft.WindowsMaps | Remove-AppxPackage
 Get-AppxPackage Microsoft.XboxApp | Remove-AppxPackage
@@ -72,11 +78,18 @@ Get-AppxPackage Microsoft.XboxGameOverlay* | Remove-AppxPackage
 Get-AppxPackage Microsoft.XboxGamingOverlay* | Remove-AppxPackage
 Get-AppxPackage Microsoft.XboxSpeechToTextOverlay* | Remove-AppxPackage
 Get-AppxPackage Microsoft.XboxIdentityProvider | Remove-AppxPackage
+Get-AppxPackage Microsoft.Xbox.TCUI | Remove-AppxPackage
 Get-AppxPackage Microsoft.YourPhone | Remove-AppxPackage
+Get-AppxPackage Microsoft.WindowsCamera | Remove-AppxPackage
 Get-AppxPackage Microsoft.ZuneMusic | Remove-AppxPackage
 Get-AppxPackage Microsoft.ZuneVideo | Remove-AppxPackage
 Get-AppxPackage Microsoft.SkypeApp | Remove-AppxPackage
 Get-AppxPackage microsoft.windowscommunicationsapps | Remove-AppxPackage
+Get-AppxPackage Microsoft.Advertising.Xaml | Remove-AppxPackage
+Get-AppxPackage Microsoft.Todos | Remove-AppxPackage
+Get-AppxPackage Microsoft.Microsoft3DViewer | Remove-AppxPackage
+Get-AppxPackage Microsoft.Messaging | Remove-AppxPackage
+Get-AppxPackage Microsoft.WindowsAlarms| Remove-AppxPackage
 
 # Remove OneDrive #
 # Kill onedrive process
@@ -99,5 +112,26 @@ rm -Recurse -Force -ErrorAction SilentlyContinue "$env:programdata\Microsoft One
 rm -Recurse -Force -ErrorAction SilentlyContinue "C:\OneDriveTemp"
 # Remove startmenu entry
 rm -Force -ErrorAction SilentlyContinue "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
-# Remove OnDrive directory from user home
+# Remove OneDrive directory from user home
 rm -Recurse -Force -ErrorAction SilentlyContinue "$env:userprofile\OneDrive"
+
+### Disable bloatware installing and advertising
+# Don't silently install more bloatware
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'ContentDeliveryAllowed' 'DWORD' 0
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'OemPreInstalledAppsEnabled' 'DWORD' 0
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'PreInstalledAppsEnabled' 'DWORD' 0
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'PreInstalledAppsEverEnabled' 'DWORD' 0
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'SilentInstalledAppsEnabled' 'DWORD' 0
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'SystemPaneSuggestionsEnabled' 'DWORD' 0
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'SubscribedContent-338388Enabled' 'DWORD' 0
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'SubscribedContent-338389Enabled' 'DWORD' 0
+# for new users
+Update-ItemProperty 'Registry::HKU\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'SystemPaneSuggestionsEnabled' 'DWORD' 0
+Update-ItemProperty 'Registry::HKU\.DEFAULT\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'PreInstalledAppsEnabled' 'DWORD' 0
+Update-ItemProperty 'Registry::HKU\.DEFAULT\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'OemPreInstalledAppsEnabled' 'DWORD' 0
+
+# Disable tips
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'SoftLandingEnabled' 'DWORD' 0
+
+# Disable Consumer experience to prevent "Suggested Applications" returning
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\CloudContent' 'DisableWindowsConsumerFeatures' 'DWORD' 1
