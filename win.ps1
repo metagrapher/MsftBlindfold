@@ -136,11 +136,31 @@ Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeli
 Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'SubscribedContent-338389Enabled' 'DWORD' 0
 # for new users
 Update-ItemProperty 'Registry::HKU\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'SystemPaneSuggestionsEnabled' 'DWORD' 0
-Update-ItemProperty 'Registry::HKU\.DEFAULT\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'PreInstalledAppsEnabled' 'DWORD' 0
-Update-ItemProperty 'Registry::HKU\.DEFAULT\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'OemPreInstalledAppsEnabled' 'DWORD' 0
+Update-ItemProperty 'Registry::HKU\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'PreInstalledAppsEnabled' 'DWORD' 0
+Update-ItemProperty 'Registry::HKU\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'OemPreInstalledAppsEnabled' 'DWORD' 0
 
 # Disable tips
 Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' 'SoftLandingEnabled' 'DWORD' 0
 
 # Disable Consumer experience to prevent "Suggested Applications" returning
 Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\CloudContent' 'DisableWindowsConsumerFeatures' 'DWORD' 1
+
+### Privacy
+## Disable Cortana
+# Prevents sending speech, inking and typing samples to MS
+Update-ItemProperty 'HKCU:\Software\Microsoft\Personalization\Settings' 'AcceptedPrivacyPolicy' 'DWORD' 0
+# Prevents sending contacts to MS
+Update-ItemProperty 'HKCU:\Software\Microsoft\InputPersonalization\TrainedDataStore' 'HarvestContacts' 'DWORD' 0
+# Disable Cortana, web search and stop service
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\Windows Search' 'AllowCortana' 'DWORD' 0
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\Windows Search' 'ConnectedSearchUseWeb' 'DWORD' 0
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\Windows Search' 'ConnectedSearchUseWebOverMeteredConnections' 'DWORD' 0
+Update-ItemProperty 'HKLM:\Software\Policies\Microsoft\Windows\Windows Search' 'DisableWebSearch' 'DWORD' 1
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search' 'AllowSearchToUseLocation' 'DWORD' 0
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search' 'BingSearchEnabled' 'DWORD' 0
+Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search' 'CortanaConsent' 'DWORD' 0
+Set-Service WSearch -StartupType Disabled
+Stop-Service WSearch
+
+# Handwriting recognition personalization
+Update-ItemProperty 'HKCU:\Software\Microsoft\InputPersonalization' 'RestrictImplicitInkCollection' 'DWORD' 1
