@@ -31,8 +31,15 @@ Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Hi
 Update-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel' $UserDesktopIcon 'DWORD' 0
 
 # Hide 3D objects in Explorer's sidebar
-Remove-Item -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}'
-Remove-Item -Path 'HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}'
+$3dobj = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}'
+$3dObjWow64 = 'HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}'
+if (Test-Path $3dobj) {
+    Remove-Item -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}'
+}
+
+if (Test-Path $3dObjWow64) {
+    Remove-Item -Path 'HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}'
+}
 
 ### Updates ###
 # Check for updates, but download and install only on demand. Automatic reboot is disabled.
@@ -90,6 +97,8 @@ Get-AppxPackage Microsoft.Todos | Remove-AppxPackage
 Get-AppxPackage Microsoft.Microsoft3DViewer | Remove-AppxPackage
 Get-AppxPackage Microsoft.Messaging | Remove-AppxPackage
 Get-AppxPackage Microsoft.WindowsAlarms| Remove-AppxPackage
+Get-AppxPackage Microsoft.MSPaint | Remove-AppxPackage
+Get-AppxPackage Microsoft.MicrosoftStickyNotes | Remove-AppxPackage
 
 # Remove OneDrive #
 # Kill onedrive process
